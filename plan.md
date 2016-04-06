@@ -18,6 +18,8 @@ Some things to know about the default image:
 - all other wordpress directories are relative to there, like `wp-content/` is located at `/var/www/html/wp-content/`
 - it is recommended to mount only the folders that you change and leave the rest untouched.
 
+also: http://blog.next-revision.com/laravel-on-docker/
+
 ```yaml
 # this should work just fine
 wordpress:
