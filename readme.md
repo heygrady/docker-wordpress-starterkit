@@ -25,16 +25,18 @@ Currently Docker has a confusing ecosystem of command line tools. The good news 
 - [docker-machine](https://docs.docker.com/machine/reference/)
 - [docker-pf](https://github.com/noseglid/docker-pf)
 
+**NOTE:** Make sure you've at least done [step 1](https://docs.docker.com/mac/step_one/).
+
 ### Docker Compose
-You need to use [docker compose](https://docs.docker.com/compose/) for local dev. It allows you to set up a simple `docker-compose.yml` file that will bundle all of the ugly `docker` commands together for you. If you see a tutorial that has you typing `docker ...` on the command line there's probably a better way to do that inside a `docker-compose.yml` file. You'll see a bunch of documentation about firing up an image with something like: `docker run --name wordpressdb mysql`. Don't be confused! If you were deploying to a production environment the `docker` cli would make sense. For local development you should use `docker-compose`.
+You need to use [docker compose](https://docs.docker.com/compose/) for local dev. It allows you to set up a simple `docker-compose.yml` file that will bundle all of the ugly `docker` cli commands together for you. If you see a tutorial that has you typing `docker ...` on the command line there's probably a better way to do that inside a `docker-compose.yml` file. You'll see a bunch of documentation about firing up an image with something like: `docker run --name wordpressdb mysql`. Don't be confused! If you were deploying to a production environment the `docker` cli would make sense. For local development you should use `docker-compose`.
 
 Using `docker-compose` you can get a server running in no time at all (sort of). There's actually a great tutorial that walks through the basics of [using the official Wordpress image](http://www.sitepoint.com/how-to-use-the-official-docker-wordpress-image/). There's also a very light tutorial in the docker compose manual for getting started with [docker compose and wordpress](https://docs.docker.com/compose/wordpress/) (although it's low on details and slightly out of date).
 
-#### Here's the TLDR;
-
-Docker has recently moved to a [version 2 file format](https://docs.docker.com/compose/compose-file/#versioning) and it breaks a few things (namely, [env variables for links](https://docs.docker.com/compose/link-env-deprecated/)). If you're following an example that doesn't have `version: '2'` at the the top of the `docker-compose.yml` file it will work slightly differently. It's recommended to switch to version 2 because you get other cool features that you'll want to utilize later but you're going to have to [familiarize yourself with the differences](https://docs.docker.com/compose/compose-file/#upgrading) while the documentation catches up.
+Docker has recently moved to a [version 2 file format](https://docs.docker.com/compose/compose-file/#versioning) and it breaks a few things (namely, [env variables for linked containers](https://docs.docker.com/compose/link-env-deprecated/)). If you're following an example that doesn't have `version: '2'` at the the top of the `docker-compose.yml` file it will work slightly differently. It's recommended to switch to version 2 because you get other cool features that you'll want to utilize later... so you're going to have to [familiarize yourself with the differences](https://docs.docker.com/compose/compose-file/#upgrading) while the documentation catches up.
 
 If you want to start with the official wordpress image there's an unmerged [pull request](https://github.com/docker-library/docs/pull/532/files) with an example `docker-composer.yml` showing the new v2 syntax. It's essentially the same except there are more environment settings that are required compared to the [Sitepoint tutorial](http://www.sitepoint.com/how-to-use-the-official-docker-wordpress-image/) linked above.
+
+#### Here's the TLDR;
 
 **Create a `docker-compose.yml` file**
 You'll want to open your terminal and do something like this:
@@ -101,51 +103,54 @@ Attaching to tldr_db_1, tldr_wordpress_1
 ### Port forwarding, or, making `localhost` work
 You should have a development server running from the previous step. What now? We would like to view our new Wordpress site in a browser. Most tutorials completely skip this step or guide you into some complicated mess of looking up IP addresses. Networking is hard. Thankfully you can skip all of that and use a simple tool called [Docker port forwarder](https://github.com/noseglid/docker-pf) which makes all of your docker images appear on your Mac's localhost.
 
-Let's try opening our Wordpress instance in Chrome (pro tip: you can do that form the command line):
+#### Your server isn't available on localhost by default
+Let's try opening our Wordpress instance in Chrome (pro tip: you can do that form the command line).
 
 ```
 $ open -a Google\ Chrome http://localhost:8080
 ```
 
-That probably didn't work. Now let's install `docker-pf` and try it again.
+That probably didn't work. Your docker images get weird IP addresses by default. Docker manages this for you and it's easy enough to get it working in a production environment. For development the random IP addresses are really annoying.
+
+#### Install `docker-pf`
+Now let's install `docker-pf` and try it again.
 
 ```
 $ npm install -g docker-pf
 ```
 
-Start the port forwarder:
+#### Run `docker-pf` when you want to access your local dev servers.
+Start the port forwarder. This will forward the ports from those random IP addresses to your localhost so that it's easy to find your services. You need `docker-pf` running for it to work. We'll cover how to make this slightly easier later on.
 
 ```
 $ docker-pf
 ```
 
-Open your dev environment in Chrome:
+#### With `docker-pf` your server should be available
+Now that the ports are forwarded we should be able to open our dev environment in Chrome.
 
 ```
 $ open -a Google\ Chrome http://localhost:8080
 ```
 
-That should be much better. Of course now we're in a small pickle. To work on docker as it stands you would need to open at least 2 terminal windows and run:
+That should be much better. Of course now we're in a small pickle. Our simple "up" command is getting messy.
 
 ```
-$ eval $(docker-machine env default) && docker-compose up
-$ docker-pf
+$ eval $(docker-machine env default) && docker-compose up -d && docker-pf
 ```
 
-## Tracking common commands
-One of the easiest way to keep track of and run common commands is using a `package.json` file and NPM. It is now common practice to [utilize NPM as a build tool](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/). Even though we're working with PHP, it's still going to be easier to store our commands in a package.json file.
+## Keeping track of common commands
+One of the easiest way to keep track of and run common commands is using a `package.json` file and NPM. It is now common practice to [utilize NPM as a build tool](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/). Even though we're working with PHP, it's still going to be easier to store our commands in a package.json file. Once you've got a good flow going you may enjoy creating a bunch of shell scripts for managing these tasks. For now, NPM will be the easiest.
 
-Let's initialize npm inside the `tldr` folder we created earlier.
+#### Initialize your `package.json` file
+Let's initialize NPM inside the `tldr` folder we created earlier. Follow the instructions, it doesn't really matter how you fill it out until you feel like publishing this package to NPM, which we won't be doing. If you want to, just hit the return key and use all of the default answers.
 
 ```
 $ npm init
 ```
 
-Follow the instructions, it doesn't really matter how you fill it out until you feel like publishing this package to NPM, which we won't be doing. If you want to, just hit the return key and use all of the default answers.
-
+#### Open the package.json file
 In the package.json file under `scripts` there should already be a test command. You can add others. You could run test using `npm run test`. Let's add one called `docker:env` and run it using `npm run docker:env`.
-
-Open the package.json file:
 
 ```
 $ subl package.json
