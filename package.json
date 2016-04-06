@@ -1,0 +1,15 @@
+{
+  "name": "docker-wordpress-starterkit",
+  "version": "0.0.0",
+  "description": "Starter kit for running Wordpress in development and productioon using Docker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:env": "eval $(docker-machine env default)",
+    "docker:pf": "npm run docker:env -s && docker-pf 0<&- &>/dev/null &",
+    "docker:up": "npm run docker:pf -s && docker-compose up -d",
+    "docker:down": "docker-compose down && kill $(ps aux | grep docker-pf | grep -v grep | awk '{print $2}')"
+  },
+  "author": "",
+  "license": "MIT"
+}
