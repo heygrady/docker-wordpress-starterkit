@@ -1,17 +1,24 @@
-wordpress:
-  hostname: buddy
-  # build: .
-  image: wordpress
-  links:
-    - db:mysql
-  # depends_on:
-  #   - db
-  ports:
-    - 8080:80
-  working_dir: /var/www/html
-  volumes:
-    - ./wp-content:/var/www/html/wp-content
-db:
-  image: mariadb
-  environment:
-    MYSQL_ROOT_PASSWORD: barnabus
+version: '2'
+
+services:
+  wordpress:
+    image: wordpress
+    ports:
+       - "8080:80"
+    volumes:
+      - data-web:/var/www/html/wp-content/uploads:rw
+    environment:
+       WORDPRESS_DB_PASSWORD: example
+       MYSQL_PORT_3306_TCP_PROTO: tcp
+       WORDPRESS_DB_HOST: db
+
+  db:
+    image: mariadb
+    volumes:
+      - data-db:/var/log/mysql
+    environment:
+       MYSQL_ROOT_PASSWORD: example
+
+volumes:
+  data-web: {}
+  data-db: {}
