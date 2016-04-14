@@ -398,5 +398,101 @@ $ npm run docker:down && npm run docker:up
 $ open -a Google\ Chrome http://localhost:8080
 ```
 
+# Creating a new image
+At this point we're somehwat bending over backwards to use the default WordPress image when it ultimately does things we don't want it to do. If you're not an expert of shell scripts, starting from a blank slate can be daunting. So, what next? Why not create a new image that does roughly what the WordPress image does and alter the parts of it that don't work the way we wany. If it wasn't explicitly stated before, we're trying to get the [Bedrock](https://roots.io/bedrock/docs/installing-bedrock/) version of WordPress running, so we're going to have to make a few changes.
 
+## Making a custom `Dockerfile`
+There are a couple of good examples of a `Dockerfile` for WordPress. The [officical WordPress Dockerfile](https://github.com/docker-library/wordpress/blob/master/apache/Dockerfile), the [WordPress Starter from visiblevc](https://github.com/visiblevc/wordpress-starter/blob/master/Dockerfile) are good starts but the [Bedrock Docker image from pcfreak](https://github.com/pcfreak30/bedrock-docker/blob/master/apache_php/Dockerfile) tackles our Bedrock-specific problems using the official Wordpress image as the starting point. Ultimately it's a matter of taste how to blend all of these together. Each of them has a not-quite-perfect mix of features. For now we'll ignore that all of the images I'm referencing are using Apache even though all of the cool kids are using Nginx and PHP-FPM.
 
+As a rough start, let's create a new folder `servers/wordpress/` and add some files. Presume we're in our `tldr` forlder from before. You can see examples of these files in this repository. They're too long to paste here.
+
+```
+$ mkdir -p servers/wordpress
+$ touch servers/wordpress/docker-entrypoint.sh && chmod +x servers/wordpress/docker-entrypoint.sh
+$ touch servers/wordpress/Dockerfile
+$ touch servers/wordpress/php.ini
+```
+
+## Updating our `docker-compose.yml` file
+
+```yaml
+version: '2'
+
+services:
+  wordpress:
+    # use our custom wordpress image
+    build:
+      context: ./servers/wordpress/
+      dockerfile: Dockerfile
+    ports:
+       - "8080:80"
+    volumes:
+      # mount your bedrock site as /var/www
+      - ./bedrock/:/var/www/:rw
+    links:
+      - db:mysql
+    environment:
+      # TODO: how do these interact with the .env file? Seem to override it.
+      # TODO: WP_ENV: development|staging|production should `cp .env.${WP_ENV} .env`
+      DB_NAME: wordpress
+      DB_USER: root
+      DB_HOST: mysql:3306
+      DB_PASSWORD: pass
+      WP_HOME: http://localhost:8080
+      WP_SITEURL: http://localhost:8080/wp
+
+  db:
+    image: mariadb
+    volumes:
+      # mount your sql backup files to be imported on server launch
+      - ./data/:/docker-entrypoint-initdb.d/
+      # mount mysql data files to a docker volume
+      - data:/var/log/mysql
+    environment:
+      #MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: pass
+
+volumes:
+  #TODO: what precicely does this directive do?
+  data: {}
+
+```
+
+## Adding more helpful scripts for managing the database
+You can see these new scripts in the `package.json` in this repository. Here is the updated docs below
+
+| Command                          | Description |
+| -------------------------------- | ---         |
+| `npm run docker:env`             | Sets the docker environment variables. This doesn't work exactly like you'd expect when you run it through NPM. It doesn't actually set the variables in your shell but in the environment that NPM is executing within. This is most useful when combined with other commands. NOTE: hmmmm. This needs explored.       |
+| `npm run bedrock:init` | Downloads a fresh copy of Bedrock WordPress to a local `bedrock` directory. |
+| `npm run docker:pf`              | Starts the docker-pf port forwarding script in background mode. |
+| `npm run docker:pf:down`         | Kills the docker-pf port forwarding script. |
+| `npm run docker:build`           | Builds or rebuilds the images. Useful when you make changes to your `Dockerfile` or any of the files that are mentioned in your `Dockerfile`, like the `docker-entrypoint.sh`. |
+| `npm run docker:up`              | Starts the port forwarding script and starts your servers. |
+| `npm run docker:up:daemon`       | Starts your servers as a background daemon. |
+| `npm run docker:down`            | Stops the servers and stops the port forwarding script. |
+| `npm run docker:down:dump`       | Dumps the DB to your local and then stops the servers. |
+| `npm run docker:shell`           | Launches an interactive shell in the docker machine running WordPress. |
+| `npm run docker:shell:wordpress` | Launches an interactive shell in the docker machine running WordPress. |
+| `npm run docker:shell:db`        | Launches an interactive shell in the docker machine running your DB. |
+| `npm run docker:db:dump`         | Zips up any existing dumps and then dumps the current schema and data to your local `data` directory. |
+| `npm run docker:db:dump:schema`  | Zips up any existing schema dumps and dumps the current schema to your local `data` directory. |
+| `npm run docker:db:dump:data`    | Zips up any existing data dumps and dumps the current data to your local `data` directory. |
+| `npm run docker:db:roll:schema`  | Zips up any existing schema dumps and labels them with a timestamp in your local `data` directory. |
+| `npm run docker:db:roll:data`    | Zips up any existing data dumps and labels them with a timestamp in your local `data` directory. |
+
+## New workflow
+
+In a fresh directory we can get WordPress running ver quickly.
+
+```
+$ git clone https://github.com/heygrady/docker-wordpress-starterkit.git tldr && cd tldr
+$ docker-machine start default && eval $(docker-machine env default)
+$ npm run bedrock:init
+$ npm run docker:up:daemon
+# wait for everyhting to initialize, might take a bit
+$ open -a Google\ Chrome http://localhost:8080
+# go through the install completely
+$ npm run docker:db:dump
+$ npm run docker:down
+```
