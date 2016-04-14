@@ -483,16 +483,20 @@ You can see these new scripts in the `package.json` in this repository. Here is 
 
 ## New workflow
 
-In a fresh directory we can get WordPress running ver quickly.
+In a fresh directory we can get WordPress running very quickly.
 
 ```
 $ git clone https://github.com/heygrady/docker-wordpress-starterkit.git tldr && cd tldr
-$ docker-machine start default && eval $(docker-machine env default)
+$ docker-machine start default || true && eval $(docker-machine env default)
 $ npm run bedrock:init
 $ npm run docker:up:daemon
-# wait for everyhting to initialize, might take a bit
+# wait for everything to initialize, might take a bit
+# it runs composer install for you
 $ open -a Google\ Chrome http://localhost:8080
 # go through the install completely
 $ npm run docker:db:dump
 $ npm run docker:down
+# now when you bring the servers back up
+# you'll have your data in place
+$ npm run docker:up:daemon
 ```
