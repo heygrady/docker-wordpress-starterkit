@@ -330,11 +330,12 @@ Here's an outline of our approach:
 Because you can mount files into container as much as you please you can do some pretty crazy stuff.
 
 # Entrypoints
-To get any further with our installation, we need to replace the `entrypoint.sh` script that the official WordPress image uses with one that plays nicer with our desired workflow. There's actually great example in [ticket #99](https://github.com/docker-library/mysql/issues/99) of overriding the default entrypoint from your `docker-compose.yml` file. We need to make our own shell script, mount it into the wordpress image and add a `command` to our `docker-compose.yml` file to execute that script before it starts the server.
+To get any further with our installation, we need to replace the `entrypoint.sh` script that the official WordPress image uses with one that plays nicer with our desired workflow. There's actually great example in [ticket #99](https://github.com/docker-library/mysql/issues/99) of overriding the default entrypoint from your `docker-compose.yml` file. We need to make our own shell script, mount it into the wordpress image and add an `entrypoint` to our `docker-compose.yml` file to execute that script before it starts the server.
 
 - The [example we're mimicking](https://github.com/neam/docker-stack/blob/1a741b0fb2ce59e9c0cadf4516dc61f147e3efc2/stacks/debian-php-nginx.dna-project-base/docker-compose.yml#L103-L112).
 - The [official wordpress image `entrypoint.sh`](https://github.com/docker-library/wordpress/blob/master/apache/docker-entrypoint.sh)
 
+## Hello custom entrypoint
 First we need to create our shell script. In our `tldr` folder from below, let's make one.
 
 ```
@@ -389,5 +390,13 @@ volumes:
   data-web: {}
   data-db: {}
 ```
+
+With this in place our server should start up just fine and we should see an error page ("You don't have permission to access / on this server.") in the browser. This is a good thing! We got our server to run and we bypassed all of the junk that the default entrypoint script usually does for us. Of course this means we didn't actually get wordpress installed, but that's ok! We can fix that in the next steps by adding things to our custom entrypoint.
+
+```
+$ npm run docker:down && npm run docker:up
+$ open -a Google\ Chrome http://localhost:8080
+```
+
 
 

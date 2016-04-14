@@ -5,12 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "bedrock:init": "git clone https://github.com/roots/bedrock.git && cp bedrock/.env.example bedrock/.env",
     "docker:env": "eval $(docker-machine env default)",
     "docker:pf": "npm run docker:env -s && docker-pf 0<&- &>/dev/null & \n",
     "docker:pf:down": "kill $(ps aux | grep docker-pf | grep -v grep | awk '{print $2}') || true",
-    "docker:up": "npm run docker:pf -s && docker-compose up -d",
-    "docker:down": "docker-compose down && npm run docker:pf:down -s",
-    "docker:shell": "docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=wordpress\") bash"
+    "docker:build": "npm run docker:env -s && docker-compose build",
+    "docker:up": "npm run docker:pf -s && docker-compose up",
+    "docker:up:daemon": "npm run docker:up -- -d\n",
+    "docker:down": "npm run docker:env -s && docker-compose down && npm run docker:pf:down -s",
+    "docker:down:dump": "npm run docker:db:dump -s && npm run docker:down -s",
+    "docker:shell": "npm run docker:shell:wordpress",
+    "docker:shell:wordpress": "npm run docker:env -s && docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=tldr_wordpress_1\") bash",
+    "docker:shell:db": "npm run docker:env -s && docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=tldr_db_1\") bash",
+    "docker:db:dump": "npm run docker:env -s && npm run docker:db:dump:schema -s && npm run docker:db:dump:data -s",
+    "docker:db:dump:schema": "npm run docker:db:roll:schema -s && echo dumping schema && docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=tldr_db_1\") mysqldump -uroot -ppass --opt -d -B wordpress > $(pwd)/data/01-schema.sql",
+    "docker:db:dump:data": "npm run docker:db:roll:data -s && echo dumping data && docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=tldr_db_1\") mysqldump -uroot -ppass --quick --single-transaction -t -n -B wordpress > $(pwd)/data/02-data.sql",
+    "docker:db:roll:schema": "if [ -f $(pwd)/data/01-schema.sql ]; then echo rolling schema && zip -j $(pwd)/data/01-schema-$(stat -f \"%Sm\" -t \"%Y-%m-%dT%H-%M-%S\" $(pwd)/data/01-schema.sql).zip $(pwd)/data/01-schema.sql; fi",
+    "docker:db:roll:data": "if [ -f $(pwd)/data/02-data.sql ]; then echo rolling data && zip -j $(pwd)/data/02-data-$(stat -f \"%Sm\" -t \"%Y-%m-%dT%H-%M-%S\" $(pwd)/data/02-data.sql).zip $(pwd)/data/02-data.sql; fi"
+
   },
   "author": "",
   "license": "MIT"
