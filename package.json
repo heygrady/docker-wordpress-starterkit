@@ -11,7 +11,7 @@
     "docker:pf:down": "kill $(ps aux | grep docker-pf | grep -v grep | awk '{print $2}') || true",
     "docker:build": "docker-compose build",
     "docker:up": "npm run docker:pf -s && docker-compose up",
-    "docker:up:daemon": "npm run docker:up -- -d\n",
+    "docker:up:daemon": "echo 'Starting services in background.' && npm run docker:up -s -- -d && echo 'Please be patient. Services take several seconds to spin up.'",
     "docker:down": "docker-compose down && npm run docker:pf:down -s",
     "docker:down:dump": "npm run docker:db:dump -s && npm run docker:down -s",
     "docker:shell": "npm run docker:shell:wordpress",
