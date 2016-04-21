@@ -1,0 +1,5 @@
+.dockerignore
+.editorconfig
+.gitignore
+docker-compose.yml
+package.json
