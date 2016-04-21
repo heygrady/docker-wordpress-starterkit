@@ -104,6 +104,7 @@ $stderr = fopen('php://stderr', 'w');
 list($host, $port) = explode(':', $argv[1], 2);
 
 $maxTries = 10;
+echo "Attempting connection to database\n";
 do {
   $mysql = new mysqli($host, $argv[2], $argv[3], '', (int)$port);
   if ($mysql->connect_error) {
@@ -115,6 +116,7 @@ do {
     sleep(3);
   }
 } while ($mysql->connect_error);
+echo "Successfully connected to database\n";
 
 if (!$mysql->query('CREATE DATABASE IF NOT EXISTS `' . $mysql->real_escape_string($argv[4]) . '`')) {
   fwrite($stderr, "\n" . 'MySQL "CREATE DATABASE" Error: ' . $mysql->error . "\n");
@@ -152,6 +154,7 @@ fi
 
 # run composer install and update
 # TODO: only do this for WP_ENV=development
+echo 'Installing dependencies using composer'
 composer install && composer update
 
 exec "$@"
