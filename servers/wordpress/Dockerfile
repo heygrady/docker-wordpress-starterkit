@@ -39,6 +39,7 @@ RUN git clone https://github.com/roots/bedrock /usr/src/bedrock \
 
 #Copy entry point and php config
 COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod 777 /entrypoint.sh
 COPY php.ini /usr/local/etc/php/php.ini
 
 # Fix apache
