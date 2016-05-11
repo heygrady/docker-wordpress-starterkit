@@ -138,6 +138,12 @@ That should be much better. Of course now we're in a small pickle. Our simple "u
 $ eval $(docker-machine env default) && docker-compose up -d && docker-pf
 ```
 
+## Using Sequel Pro to acccess MariaDB
+In the docker-compose.yml file, we've added a port forward to the host machine so that the MySQL instance can be accessed via a GUI like [Sequel Pro](http://www.sequelpro.com/) (which we use) or a similar tool. It serves the instance at the standard port (3306), and can be accessed using 127.0.0.1 as the host. **TODO** environment variables should feed into this so that we can only use this on dev, maybe staging.
+
+We've added a neat shortcut to Sequel Pro by stealing [this excellent shell script](https://gist.github.com/helderco/e9d8d072a362ad818f6a) and adding it to our NPM shortcuts below. Once the environment is up and running, you can simply run `npm run docker:db:open` and, assuming you have Sequel Pro installed, it'll open up right to your WordPress DB. Bitchin'.
+
+
 ## Keeping track of common commands
 One of the easiest ways to keep track of and run common commands is using a `package.json` file and NPM. It is now common practice to [utilize NPM as a build tool](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/). Even though we're working with PHP, it's still going to be easier to store our commands in a package.json file. Once you've got a good flow going you may enjoy creating a bunch of shell scripts for managing these tasks. For now, NPM will be the easiest.
 
@@ -476,6 +482,7 @@ You can see these new scripts in the `package.json` in this repository. Here is 
 | `npm run docker:shell:wordpress` | Launches an interactive shell in the docker machine running WordPress. |
 | `npm run docker:shell:db`        | Launches an interactive shell in the docker machine running your DB. |
 | `npm run docker:db:dump`         | Zips up any existing dumps and then dumps the current schema and data to your local `data` directory. |
+| `npm run docker:db:open`         | Launches Sequel Pro with an open connection to your current WordPress MySQL database. |
 | `npm run docker:db:dump:schema`  | Zips up any existing schema dumps and dumps the current schema to your local `data` directory. |
 | `npm run docker:db:dump:data`    | Zips up any existing data dumps and dumps the current data to your local `data` directory. |
 | `npm run docker:db:roll:schema`  | Zips up any existing schema dumps and labels them with a timestamp in your local `data` directory. |
@@ -499,4 +506,6 @@ $ npm run docker:down
 # now when you bring the servers back up
 # you'll have your data in place
 $ npm run docker:up:daemon
+# need a MySQL GUI?
+$ npm run docker:db:open
 ```
