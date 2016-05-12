@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "description": "Starter kit for running Wordpress in development using Docker",
   "main": "index.js",
+  "config": {
+    "repo": "https://github.com/roots/bedrock.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bedrock:init": "git clone https://github.com/roots/bedrock.git && cp bedrock/.env.example bedrock/.env",
+    "bedrock:init": "git clone $npm_package_config_repo bedrock && cp .env.example bedrock/.env",
     "docker:env": "echo \"exec the following command:\n\n    docker-machine start default || true && eval \\$(docker-machine env default)\"\n\n",
     "docker:pf": "docker-pf 0<&- &>/dev/null & \n",
     "docker:pf:down": "kill $(ps aux | grep docker-pf | grep -v grep | awk '{print $2}') || true",

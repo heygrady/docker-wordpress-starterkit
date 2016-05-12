@@ -35,7 +35,7 @@ for env in "DB_NAME" "DB_USER" "DB_PASSWORD" "WP_HOME" "WP_SITEURL"; do
 done
 
 if [ "$error" = true ]; then
-  echo >&2 'errors occurred, existing'
+  echo >&2 'errors occurred, exiting'
   exit 1
 fi
 
@@ -155,6 +155,6 @@ fi
 # run composer install and update
 # TODO: only do this for WP_ENV=development
 echo 'Installing dependencies using composer'
-composer install && composer update
+composer install
 
 exec "$@"
