@@ -2,7 +2,7 @@
 
 Several approaches already exist for using Docker with WordPress, including a couple of turnkey solutions and an [official Docker container for WordPress](https://hub.docker.com/_/wordpress/), but the thing is, we use [Bedrock](https://roots.io/bedrock/) in development and production, so we needed to take a different path.
 
-The R&D behind this project continues, and you can read all about the long-form journey [here](project-history.md). In a nutshell, this project aims to mate Docker with what we've found to be the best workflow (Bedrock) for making WordPress more like a true [twelve-factor application](http://12factor.net/).
+The R&D behind this project continues, and you can read all about the long-form journey [here](docs/project-history.md). In a nutshell, this project aims to mate Docker with what we've found to be the best workflow (Bedrock) for making WordPress more like a true [twelve-factor application](http://12factor.net/).
 
 
 ## Assumptions/Requirements
@@ -10,11 +10,11 @@ The R&D behind this project continues, and you can read all about the long-form 
 This is written assuming you want to develop WordPress (Bedrock) on a Mac using Docker to manage your local dev environment. 
 
 With that in mind, you'll need:
-- [Node/NPM](https://docs.npmjs.com/getting-started/installing-node)
+- [Node/NPM](https://docs.npmjs.com/getting-started/installing-node) (Make sure you have the latest stable version of Node!)
 - [Docker/Docker Toolbox](https://www.docker.com/products/docker-toolbox)
 - [Sequel Pro](http://www.sequelpro.com/) (Optional, but great if you want a GUI for your local DB)
 
-*N.B!* You will only be able to use the guides herein if you have finished at least [Step 1](https://docs.docker.com/mac/step_one/) of the Docker Toolbox docs. Go ahead, we'll wait.
+**N.B!** You will only be able to use the guides herein if you have successfully completed at least the ["Hello World" example](https://docs.docker.com/mac/step_one/) in the Docker Toolbox docs. Go ahead, we'll wait.
 
 
 ## How to Proceed
@@ -33,6 +33,7 @@ Great, let's get on with it, then!
 ```
 # Start wherever you wanna keep your local dev sites. We like to just name our directory after the domain of the project.
 $ git clone https://github.com/heygrady/docker-wordpress-starterkit.git yoursite.com && cd yoursite.com
+$ npm install # currently only installs docker-pf
 $ docker-machine start default || true && eval $(docker-machine env default)
 # This pulls down a fresh WordPress/Bedrock installation
 $ npm run bedrock:init

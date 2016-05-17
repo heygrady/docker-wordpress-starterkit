@@ -26,8 +26,10 @@
     "docker:db:dump:data": "npm run docker:db:roll:data -s && echo dumping data && docker exec -it $(docker ps --format \"{{.ID}}\" --filter \"name=$(basename $(pwd) | sed -e 's/[^a-z0-9]//g')_db_1\") mysqldump -uroot -ppass --quick --single-transaction -t -n -B wordpress > $(pwd)/data/02-data.sql",
     "docker:db:roll:schema": "if [ -f $(pwd)/data/01-schema.sql ]; then echo rolling schema && zip -j $(pwd)/data/01-schema-$(stat -f \"%Sm\" -t \"%Y-%m-%dT%H-%M-%S\" $(pwd)/data/01-schema.sql).zip $(pwd)/data/01-schema.sql; fi",
     "docker:db:roll:data": "if [ -f $(pwd)/data/02-data.sql ]; then echo rolling data && zip -j $(pwd)/data/02-data-$(stat -f \"%Sm\" -t \"%Y-%m-%dT%H-%M-%S\" $(pwd)/data/02-data.sql).zip $(pwd)/data/02-data.sql; fi"
-
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "docker-pf": "^1.1.0"
+  }
 }

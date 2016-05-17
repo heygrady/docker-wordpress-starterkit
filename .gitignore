@@ -1,3 +1,5 @@
 .notes
 *.log
 *.DS_Store
+bedrock/
+node_modules/
