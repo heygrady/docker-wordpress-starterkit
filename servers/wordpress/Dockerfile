@@ -32,11 +32,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 
 WORKDIR /usr/src/bedrock
 
-# Clones bedrock git and checks out latest tag so this gives us /usr/src/bedrock
-# TODO: why? not very useful
-RUN git clone https://github.com/roots/bedrock /usr/src/bedrock \
-    && chown -R www-data:www-data /usr/src/bedrock
-
 #Copy entry point and php config
 COPY docker-entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
