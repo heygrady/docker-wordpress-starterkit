@@ -38,8 +38,10 @@ RUN chmod 777 /entrypoint.sh
 COPY php.ini /usr/local/etc/php/php.ini
 
 # Fix apache
-RUN sed -i 's#DocumentRoot.*#DocumentRoot /var/www/web#' /etc/apache2/apache2.conf && mv \
-    /var/www/html /var/www/web
+RUN echo "DocumentRoot /var/www/web" >> /etc/apache2/apache2.conf && \
+  rm /etc/apache2/sites-enabled/000-default.conf && \
+  sed -i 's#<Directory /var/www/>.*#<Directory /var/www/web/>#' /etc/apache2/apache2.conf &&  mv \
+  /var/www/html /var/www/web
 
 VOLUME /var/www
 WORKDIR /var/www
