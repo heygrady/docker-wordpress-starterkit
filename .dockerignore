@@ -3,3 +3,4 @@
 .gitignore
 docker-compose.yml
 package.json
+node_modules

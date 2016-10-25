@@ -28,8 +28,5 @@
     "docker:db:roll:data": "if [ -f $(pwd)/data/02-data.sql ]; then echo rolling data && zip -j $(pwd)/data/02-data-$(stat -f \"%Sm\" -t \"%Y-%m-%dT%H-%M-%S\" $(pwd)/data/02-data.sql).zip $(pwd)/data/02-data.sql; fi"
   },
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "docker-pf": "^1.1.0"
-  }
+  "license": "MIT"
 }
