@@ -2,6 +2,15 @@ This document is an outline for how to deploy and manage a Docker application on
 
 This document should serve as a cheatsheet for creating and deploying projects.
 
+**[See example application](../examples/deployment-on-gke)**
+
+### Important links
+- [docker-compose.yml to kubernetes](https://github.com/kubernetes-incubator/kompose)
+
+### Read these
+- [hello world on kubernetes](http://kubernetes.io/docs/hellonode/)
+- [wordpress on kubernetes](https://cloud.google.com/container-engine/docs/tutorials/persistent-disk/)
+
 # Source
 Our application consists of code that needs deployed on servers. Most people use Git to manage their source code. This document covers source code management from the perspective of deploying the code to a server. It also outlines a good practice for structuring your source code repositories with safe deployment practices in mind.
 
@@ -92,6 +101,7 @@ If you are running Docker in daemon mode (in the background) you will eventually
 
 - **Foreground:** If docker is running in the foreground, use `ctrl+c` to kill it.
 - **Background:** If you started Docker with you `npm run docker:up:daemon` you can bring it down with `npm run docker:down`.
+
   ```bash
   # stop docker
   npm run docker:down
