@@ -1,0 +1,57 @@
+version: '2'
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - "./.data/db:/var/lib/mysql"
+    restart: always
+    environment:
+      # who cares if this is insecure? This will only ever be used in dev
+      # technically you should use encrypted secrets for these values
+      # the production deployment will use kubernetes secrets
+      # @see http://kubernetes.io/docs/user-guide/secrets/
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+  wordpress:
+    depends_on:
+      - db
+    build:
+      context: ./containers/wordpress/
+      dockerfile: Dockerfile
+    links:
+      - db
+    ports:
+      - "8080:80"
+    restart: always
+    volumes:
+      - "./:/var/www/:rw"
+    environment:
+      # NOTE: use this instead of a .env file
+      #
+      # the production deployment will use kubernetes secrets
+      # @see http://kubernetes.io/docs/user-guide/secrets/
+      DB_NAME: wordpress
+      DB_USER: wordpress
+      DB_HOST: db:3306
+      DB_PASSWORD: wordpress
+      WP_HOME: http://localhost:8080
+      WP_SITEURL: http://localhost:8080/wp
+
+      # Generate your keys here: https://roots.io/salts.html
+      #
+      # NOTE: If your key or salt contains a $, it needs "escaped" as $$
+      # example: AUTH_KEY: '$' should be AUTH_KEY: '$$' to avoid errors
+      # @see https://github.com/docker/compose/issues/2507
+      #
+      # NOTE: if you don't include these keys, *random keys* will be created everytime the server restarts
+      #       random keys will corrupt the DB if there is a miusmatch because nothing can be decrypted
+      AUTH_KEY: '1T!AN|Np9!-[/jzt+_EkN--uh0@/x5f<,f{v]I?G%0l6XwF_A;%hCzF-02rI^oD`'
+      SECURE_AUTH_KEY: 'lz3=ehc+<^%WG])cb]-;$$?$$1@TeW$$ezd-T*jX|)z((Tq&$${|zl&7(M8cc*6sch<a'
+      LOGGED_IN_KEY: '8E.5TBLte$$wapUL91&{b9!^H`Ly&Me4%^GDo^&B1/CrG(y.&x0zC@%X/tu0`ha^-'
+      NONCE_KEY: 'Q!eVC;/C!tZ(F@%54rsnmIRl[J+&p(y.qe_ki3<+wE6:u.5MDuem8!LNm/e,KFSN'
+      AUTH_SALT: 'J2+y/ezk(SFqOh7O!m{<rw;JhiWj:F*cJFdO@3:x_AkC`+j0O0.`}A<z#zqXND+O'
+      SECURE_AUTH_SALT: 'cG*x&D=SqIGv%zACqU/j[0%]0|)mVll790H:QHuhx2h42NS%FF]em#-]=^+$$C?{H'
+      LOGGED_IN_SALT: '<|NdL(;H7t?HhDB#a<F_?V}*9Q`jYPCnHNTlan8ca)7La}lot?nCwp];xeZKt;tS'
+      NONCE_SALT: 'c6u1.5R=O=noiYou(jFP5N@PlCgHxU+tZFaf|GBgZs,^!YSuH_<{5MPJ{.ED7zks'
