@@ -1,0 +1,6 @@
+{
+  "repos": {
+    "wordpress_test": "https://github.com/heygrady/docker-wordpress-starterkit.git",
+    "frontend_test": "https://github.com/heygrraady/docker-wordpress-starterkit.git"
+  }
+}
