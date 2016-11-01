@@ -1,6 +1,13 @@
 {
+  "project": "fiddle-head",
   "repos": {
-    "wordpress_test": "https://github.com/heygrady/docker-wordpress-starterkit.git",
+    "test": "",
+    "wordpress_test": {
+      "url": "https://github.com/heygrady/docker-wordpress-starterkit.git",
+      "version": "",
+      "branch": "",
+      "containers": ["wordpress"]
+    },
     "frontend_test": "https://github.com/heygrraady/docker-wordpress-starterkit.git"
   }
 }
