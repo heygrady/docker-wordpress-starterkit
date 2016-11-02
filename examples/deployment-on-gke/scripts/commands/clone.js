@@ -75,10 +75,12 @@ const clone = (cmd) => {
   }, [])
 }
 
+//
 module.exports = (program) => {
   program.command('clone')
     .description('Clones all repos to the source folder')
     .option('-r, --repo [repo]', 'Repo(s) to clone, default clones all. ex: --repo=wordpress,frontend')
+    .option('-b, --branch [branch]', 'Branch to select (not implemented)')
     .option('-f, --force', 'remove the existing repo before cloning')
     .action(clone)
 }

@@ -3,11 +3,10 @@ const Promise = require('bluebird')
 const fs = require('fs-extra-promise')
 
 const config = require('../../comfy.json')
-const { project } = config
+const { project, repos } = config
 
 const build = (cmd) => {
-  const { repos:urls } = config
-  const repos = cmd.repo ? cmd.repo.split(',') : Object.keys(urls)
+  const { repo:repos, tag } = cmd
 
   // repo
   // container
@@ -46,7 +45,8 @@ const build = (cmd) => {
           // TODO: need to control the tag per container
           // TODO: is it possible to auto-track tags per container based on deployments to prod? Maybe. Would also need to check git commits.
           // NOTE: perhaps --tag=repo-container:tag,repo2-container:tag2
-          const tag = 'v0'
+          // NOTE: maybe tag can be matched to the Git tags that are created before deploying. Seems sensible.
+          // const tag = 'v0'
 
           console.log(`Building gcr.io/${project}/${repo}-${container}:${tag}`)
           return exec(`docker build -f ./source/${repo}/containers/${container}/Dockerfile -t gcr.io/${project}/${repo}-${container}:${tag} ./source/${repo}`)
@@ -73,11 +73,14 @@ const build = (cmd) => {
   }, [])
 }
 
+const list = val => val.split(',')
+const defaultRepos = Object.keys(repos)
+
 module.exports = (program) => {
   program.command('build')
     .description('Builds Docker containers from source repositories')
-    .option('-r, --repo [repo]', 'Repo(s) to build, default builds all. ex: --repo=wordpress,frontend')
-    .option('-c, --container [container]', 'Container(s) to build, default builds all. ex: --container=wordpress,frontend')
+    .option('-r, --repo <repos>', 'Repo(s) to build, default builds all. ex: --repo=wordpress,frontend', list, defaultRepos)
+    .option('-c, --container <containers>', '(not implemented) Container(s) to build, default builds all. ex: --container=wordpress,frontend', list)
     .option('-t, --tag [tag]', 'Specify the tag for the container being built (how will this work?)')
     .option('--clone', 'Attempts to clone first (not implemented)')
     .action(build)

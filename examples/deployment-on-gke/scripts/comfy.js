@@ -18,20 +18,22 @@ program
 require('./commands/clone')(program)
 require('./commands/build')(program)
 require('./commands/push')(program)
+require('./commands/deploy')(program)
 
 program.command('tag')
-  .description('Clones all repos to the source folder')
-  .option('-r, --repo [repos...]', 'Repo(s) to clone, default clones all. ex: --repo=wordpress,frontend')
+  .description('This is for creating tags in your source repo when deplyoing to production. Production deployments require the current branch to be a Git tag.')
+  .option('-r, --repo [repos...]', 'Repo(s) to tag')
+  .option('-v, --version [version]', 'version of your tag')
   .action((repos) => {
     console.log('clone', repos)
   })
 
-program.command('deploy')
-  .description('Clones all repos to the source folder')
-  .option('-r, --repo [repos...]', 'Repo(s) to clone, default clones all. ex: --repo=wordpress,frontend')
-  .action((repos) => {
-    console.log('clone', repos)
-  })
+// program.command('deploy')
+//   .description('Clones all repos to the source folder')
+//   .option('-r, --repo [repos...]', 'Repo(s) to clone, default clones all. ex: --repo=wordpress,frontend')
+//   .action((repos) => {
+//     console.log('clone', repos)
+//   })
 
 program.command('rollback')
   .description('Clones all repos to the source folder')
