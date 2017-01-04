@@ -15,10 +15,12 @@ program
 //
 //   })
 
+// TODO: auto-load these
 require('./commands/clone')(program)
 require('./commands/build')(program)
 require('./commands/push')(program)
 require('./commands/deploy')(program)
+require('./commands/delete')(program)
 
 program.command('tag')
   .description('This is for creating tags in your source repo when deplyoing to production. Production deployments require the current branch to be a Git tag.')

@@ -5,7 +5,7 @@ const fs = require('fs-extra-promise')
 const config = require('../../comfy.json')
 const { project, repos } = config
 
-const deploy = (cmd) => {
+const deleteDeployment = (cmd) => {
   const { repo:repos, container:containers } = cmd
 
   // make an array of promise funcs
@@ -16,26 +16,25 @@ const deploy = (cmd) => {
     // a func that returns a promise
     funcs.push(() => {
       console.log(`--- ${repo}`)
+
       // check if directory exists
       return fs.readdirAsync(`./config/${repo}`).catch(err => {
         // console.log(err)
       })
 
       // ensure there are deployment files here
-      .then((files) => {
-        return files && files.length
-      })
+      .then(files => files && files.length)
 
-      // deploy!
+      // delete!
       .then(shouldDeploy => {
-        if (shouldDeploy) { console.log(`Deploying ${repo}`) }
+        if (shouldDeploy) { console.log(`Deleting ${repo}`) }
         else { console.log(`Skipping ${repo}, no files found`) }
 
-        return shouldDeploy && exec(`kubectl apply -f config/${repo}`).then(() => {
-          console.log(`Successfully deployed ${repo}\n`)
+        return shouldDeploy && exec(`kubectl delete -f config/${repo}`).then(() => {
+          console.log(`Successfully deleted ${repo}\n`)
         }).catch(err => {
           console.log(err.stderr)
-          console.log(`Error: Failed to deploy ${repo}`)
+          console.log(`Error: Failed to delete ${repo}`)
         }).childProcess.stdout.on('data', function (data) {
           console.log(data.toString().replace(/^\s+|\s+$/g, ''))
         })
@@ -56,9 +55,9 @@ const list = val => val.split(',')
 const defaultRepos = Object.keys(repos)
 
 module.exports = (program) => {
-  program.command('deploy')
-    .description('Deploys all repos to the GKE cluster')
-    .option('-r, --repo <repos>', 'Repo(s) to deploy', list, defaultRepos)
-    .option('-c, --container <containers>', '(not implemented) Container(s) to deploy', list)
-    .action(deploy)
+  program.command('delete')
+    .description('Deletes deployments from the GKE cluster')
+    .option('-r, --repo <repos>', 'Repo(s) to delete', list, defaultRepos)
+    .option('-c, --container <containers>', '(not implemented) Container(s) to delete', list)
+    .action(deleteDeployment)
 }

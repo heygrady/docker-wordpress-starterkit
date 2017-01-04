@@ -14,6 +14,7 @@
     "tag": "node ./scripts/comfy tag",
     "deploy": "node ./scripts/comfy deploy",
     "deploy:prod": "node ./scripts/comfy deploy --prod",
+    "delete": "node ./scripts/comfy delete",
     "rollback": "node ./scripts/comfy rollback"
   },
   "author": "",
