@@ -1,5 +1,5 @@
 # Deployment on GKE
-This is an example deployment repo as described in [this document](../docs/deployment-on-gke.md). The code here is what you'd expect to see in the deployment repository for a wordpress project.
+This is an example deployment repo as described in [this document](../../docs/deployment-on-gke.md). The code here is what you'd expect to see in the deployment repository for a wordpress project.
 
 #### Repos
 - `my-company/my-project-wordpress`
