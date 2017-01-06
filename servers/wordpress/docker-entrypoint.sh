@@ -141,16 +141,16 @@ fi
 # OSX Volume Issues
 # @see https://github.com/docker-library/mysql/issues/99
 # TODO: only do this for WP_ENV=development
-if [ -d "/var/www" ]; then
-  TARGET_UID=$(stat -c "%u" /var/www)
-  echo 'Setting www-data user to use uid '$TARGET_UID
-  usermod -o -u $TARGET_UID www-data || true
-  TARGET_GID=$(stat -c "%g" /var/www)
-  echo 'Setting www-data group to use gid '$TARGET_GID
-  groupmod -o -g $TARGET_GID www-data || true
-  chown -R www-data:www-data /var/www
-  chown -R www-data:www-data /usr/src/bedrock
-fi
+# if [ -d "/var/www" ]; then
+#   TARGET_UID=$(stat -c "%u" /var/www)
+#   echo 'Setting www-data user to use uid '$TARGET_UID
+#   usermod -o -u $TARGET_UID www-data || true
+#   TARGET_GID=$(stat -c "%g" /var/www)
+#   echo 'Setting www-data group to use gid '$TARGET_GID
+#   groupmod -o -g $TARGET_GID www-data || true
+#   chown -R www-data:www-data /var/www
+#   chown -R www-data:www-data /usr/src/bedrock
+# fi
 
 # run composer install and update
 # TODO: only do this for WP_ENV=development

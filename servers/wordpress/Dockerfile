@@ -13,14 +13,14 @@ RUN apt-get update && apt-get install -y apt-utils \
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-    echo 'opcache.memory_consumption=128'; \
-    echo 'opcache.interned_strings_buffer=8'; \
-    echo 'opcache.max_accelerated_files=4000'; \
-    echo 'opcache.revalidate_freq=60'; \
-    echo 'opcache.fast_shutdown=1'; \
-    echo 'opcache.enable_cli=1'; \
-  } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+# RUN { \
+#     echo 'opcache.memory_consumption=128'; \
+#     echo 'opcache.interned_strings_buffer=8'; \
+#     echo 'opcache.max_accelerated_files=4000'; \
+#     echo 'opcache.revalidate_freq=60'; \
+#     echo 'opcache.fast_shutdown=1'; \
+#     echo 'opcache.enable_cli=1'; \
+#   } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Install WP-CLI
 RUN curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
@@ -38,8 +38,11 @@ RUN chmod 777 /entrypoint.sh
 COPY php.ini /usr/local/etc/php/php.ini
 
 # Fix apache
-RUN sed -i 's#DocumentRoot.*#DocumentRoot /var/www/web#' /etc/apache2/apache2.conf && mv \
-    /var/www/html /var/www/web
+RUN echo "DocumentRoot /var/www/web" >> /etc/apache2/apache2.conf && \
+  sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf && \
+  rm /etc/apache2/sites-enabled/000-default.conf && \
+  sed -i 's#<Directory /var/www/>.*#<Directory /var/www/web/>#' /etc/apache2/apache2.conf &&  mv \
+  /var/www/html /var/www/web
 
 VOLUME /var/www
 WORKDIR /var/www
